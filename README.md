@@ -138,3 +138,168 @@ Bonus (opcional)
 - Personalizar mensajes de error
 
 - Mejorar la interfaz visual
+{
+  "submitLabel": "Submit form",
+  "fields": [
+    {
+      "key": "name",
+      "type": "input",
+      "props": {
+        "type": "text",
+        "label": "Name",
+        "placeholder": "Enter your name",
+        "required": true
+      },
+      "validation": {
+        "messages": {
+          "required": "Name is required."
+        }
+      }
+    },
+    {
+      "key": "email",
+      "type": "input",
+      "props": {
+        "type": "email",
+        "label": "Email",
+        "placeholder": "name@domain.com",
+        "required": true
+      },
+      "validators": {
+        "validation": [
+          "email"
+        ]
+      },
+      "validation": {
+        "messages": {
+          "required": "Email is required.",
+          "email": "Enter a valid email."
+        }
+      }
+    },
+    {
+      "key": "service",
+      "type": "service-selector",
+      "props": {
+        "label": "Service type",
+        "required": true,
+        "requiredMessage": "You must select a service type.",
+        "options": [
+          {
+            "label": "Gas",
+            "value": "gas",
+            "hint": "TUR and free market rates"
+          },
+          {
+            "label": "Electricity",
+            "value": "electricity",
+            "hint": "Fixed and variable rates"
+          }
+        ]
+      },
+      "validation": {
+        "messages": {
+          "required": "You must select a service type."
+        }
+      }
+    },
+    {
+      "key": "rateElectricity",
+      "type": "select",
+      "resetOnHide": true,
+      "props": {
+        "label": "Rate type (Electricity)",
+        "placeholder": "Select a rate",
+        "options": [
+          {
+            "label": "Fixed",
+            "value": "fixed"
+          },
+          {
+            "label": "Variable",
+            "value": "variable"
+          }
+        ]
+      },
+      "expressions": {
+        "hide": "model.service !== \"electricity\"",
+        "props.required": "model.service === \"electricity\""
+      },
+      "validation": {
+        "messages": {
+          "required": "Electricity rate is required."
+        }
+      }
+    },
+    {
+      "key": "power",
+      "type": "input",
+      "resetOnHide": true,
+      "props": {
+        "type": "number",
+        "label": "Contracted power",
+        "placeholder": "Example: 4.6",
+        "min": 1
+      },
+      "expressions": {
+        "hide": "model.service !== \"electricity\"",
+        "props.required": "model.service === \"electricity\""
+      },
+      "validation": {
+        "messages": {
+          "required": "Contracted power is required.",
+          "min": "Power must be greater than 0."
+        }
+      }
+    },
+    {
+      "key": "rateGas",
+      "type": "select",
+      "resetOnHide": true,
+      "props": {
+        "label": "Rate type (Gas)",
+        "placeholder": "Select a rate",
+        "options": [
+          {
+            "label": "TUR",
+            "value": "tur"
+          },
+          {
+            "label": "Free market",
+            "value": "freeMarket"
+          }
+        ]
+      },
+      "expressions": {
+        "hide": "model.service !== \"gas\"",
+        "props.required": "model.service === \"gas\""
+      },
+      "validation": {
+        "messages": {
+          "required": "Gas rate is required."
+        }
+      }
+    },
+    {
+      "key": "consumption",
+      "type": "input",
+      "resetOnHide": true,
+      "props": {
+        "type": "number",
+        "label": "Estimated consumption",
+        "placeholder": "Example: 120",
+        "min": 1
+      },
+      "expressions": {
+        "hide": "model.service !== \"gas\"",
+        "props.required": "model.service === \"gas\""
+      },
+      "validation": {
+        "messages": {
+          "required": "Estimated consumption is required.",
+          "min": "Consumption must be greater than 0."
+        }
+      }
+    }
+  ]
+}
