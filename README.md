@@ -158,16 +158,16 @@ import {
   styleUrls: ['./service-contract-form.component.scss'],
 })
 export class ServiceContractFormComponent implements OnInit, OnDestroy {
-  protected form: FormGroup = new FormGroup({});
-  protected model: ServiceFormDraft = {};
-  protected options: FormlyFormOptions = {};
-  protected fields: FormlyFieldConfig[] = [];
-  protected submitLabel: string = '';
-  protected loadError: string = '';
+  public form: FormGroup = new FormGroup({});
+  public model: ServiceFormDraft = {};
+  public options: FormlyFormOptions = {};
+  public fields: FormlyFieldConfig[] = [];
+  public submitLabel: string = '';
+  public loadError: string = '';
   private readonly _destroy$ = new Subject<void>();
   private _serviceOptions: FormOption[] = [];
 
-  constructor(private readonly _formConfigService: FormConfigService) {}
+  constructor(private readonly _formConfigService: FormConfigService) { }
 
   ngOnInit(): void {
     this._formConfigService
@@ -192,7 +192,7 @@ export class ServiceContractFormComponent implements OnInit, OnDestroy {
     this._destroy$.complete();
   }
 
-  protected _submitForm(): void {
+  public submitForm(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
@@ -201,7 +201,7 @@ export class ServiceContractFormComponent implements OnInit, OnDestroy {
     console.log('Form data:', this._buildSubmitPayload());
   }
 
-  protected _clearForm(): void {
+  public clearForm(): void {
     if (this.options.resetModel) {
       this.options.resetModel();
       return;
@@ -211,7 +211,7 @@ export class ServiceContractFormComponent implements OnInit, OnDestroy {
     this.form.reset();
   }
 
-  protected _toggleService(): void {
+  public toggleService(): void {
     if (!this._serviceOptions.length) {
       return;
     }
@@ -224,17 +224,17 @@ export class ServiceContractFormComponent implements OnInit, OnDestroy {
     this.form.get('service')?.markAsTouched();
   }
 
-  protected get _hasSelectedService(): boolean {
+  public get hasSelectedService(): boolean {
     return !!this.model.service;
   }
 
-  protected get _selectedServiceLabel(): string {
+  public get selectedServiceLabel(): string {
     const selectedOption = this._serviceOptions.find((option) => option.value === this.model.service);
     return selectedOption?.label || '';
   }
 
-  protected get _toggleServiceLabel(): string {
-    if (!this._hasSelectedService) {
+  public get toggleServiceLabel(): string {
+    if (!this.hasSelectedService) {
       return 'Switch service';
     }
 
@@ -277,4 +277,5 @@ export class ServiceContractFormComponent implements OnInit, OnDestroy {
     throw new Error('Service type is required to build payload.');
   }
 }
+
 
