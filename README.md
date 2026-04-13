@@ -138,168 +138,143 @@ Bonus (opcional)
 - Personalizar mensajes de error
 
 - Mejorar la interfaz visual
-{
-  "submitLabel": "Submit form",
-  "fields": [
-    {
-      "key": "name",
-      "type": "input",
-      "props": {
-        "type": "text",
-        "label": "Name",
-        "placeholder": "Enter your name",
-        "required": true
-      },
-      "validation": {
-        "messages": {
-          "required": "Name is required."
-        }
-      }
-    },
-    {
-      "key": "email",
-      "type": "input",
-      "props": {
-        "type": "email",
-        "label": "Email",
-        "placeholder": "name@domain.com",
-        "required": true
-      },
-      "validators": {
-        "validation": [
-          "email"
-        ]
-      },
-      "validation": {
-        "messages": {
-          "required": "Email is required.",
-          "email": "Enter a valid email."
-        }
-      }
-    },
-    {
-      "key": "service",
-      "type": "service-selector",
-      "props": {
-        "label": "Service type",
-        "required": true,
-        "requiredMessage": "You must select a service type.",
-        "options": [
-          {
-            "label": "Gas",
-            "value": "gas",
-            "hint": "TUR and free market rates"
-          },
-          {
-            "label": "Electricity",
-            "value": "electricity",
-            "hint": "Fixed and variable rates"
-          }
-        ]
-      },
-      "validation": {
-        "messages": {
-          "required": "You must select a service type."
-        }
-      }
-    },
-    {
-      "key": "rateElectricity",
-      "type": "select",
-      "resetOnHide": true,
-      "props": {
-        "label": "Rate type (Electricity)",
-        "placeholder": "Select a rate",
-        "options": [
-          {
-            "label": "Fixed",
-            "value": "fixed"
-          },
-          {
-            "label": "Variable",
-            "value": "variable"
-          }
-        ]
-      },
-      "expressions": {
-        "hide": "model.service !== \"electricity\"",
-        "props.required": "model.service === \"electricity\""
-      },
-      "validation": {
-        "messages": {
-          "required": "Electricity rate is required."
-        }
-      }
-    },
-    {
-      "key": "power",
-      "type": "input",
-      "resetOnHide": true,
-      "props": {
-        "type": "number",
-        "label": "Contracted power",
-        "placeholder": "Example: 4.6",
-        "min": 1
-      },
-      "expressions": {
-        "hide": "model.service !== \"electricity\"",
-        "props.required": "model.service === \"electricity\""
-      },
-      "validation": {
-        "messages": {
-          "required": "Contracted power is required.",
-          "min": "Power must be greater than 0."
-        }
-      }
-    },
-    {
-      "key": "rateGas",
-      "type": "select",
-      "resetOnHide": true,
-      "props": {
-        "label": "Rate type (Gas)",
-        "placeholder": "Select a rate",
-        "options": [
-          {
-            "label": "TUR",
-            "value": "tur"
-          },
-          {
-            "label": "Free market",
-            "value": "freeMarket"
-          }
-        ]
-      },
-      "expressions": {
-        "hide": "model.service !== \"gas\"",
-        "props.required": "model.service === \"gas\""
-      },
-      "validation": {
-        "messages": {
-          "required": "Gas rate is required."
-        }
-      }
-    },
-    {
-      "key": "consumption",
-      "type": "input",
-      "resetOnHide": true,
-      "props": {
-        "type": "number",
-        "label": "Estimated consumption",
-        "placeholder": "Example: 120",
-        "min": 1
-      },
-      "expressions": {
-        "hide": "model.service !== \"gas\"",
-        "props.required": "model.service === \"gas\""
-      },
-      "validation": {
-        "messages": {
-          "required": "Estimated consumption is required.",
-          "min": "Consumption must be greater than 0."
-        }
-      }
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { FormGroup } from '@angular/forms';
+import { FormlyFieldConfig, FormlyFormOptions } from '@ngx-formly/core';
+import { Subject, takeUntil } from 'rxjs';
+import { FormConfigService } from '../../../../core/services/form-config.service';
+import { FormOption } from '../../../../shared/models/form-option.model';
+import {
+  ElectricityRateType,
+  GasRateType,
+  ServiceFormDraft,
+  ServiceFormPayload,
+  ServiceType,
+} from '../../../../shared/models/service-form.model';
+
+@Component({
+  selector: 'app-service-contract-form',
+  templateUrl: './service-contract-form.component.html',
+  styleUrls: ['./service-contract-form.component.scss'],
+})
+export class ServiceContractFormComponent implements OnInit, OnDestroy {
+  protected form: FormGroup = new FormGroup({});
+  protected model: ServiceFormDraft = {};
+  protected options: FormlyFormOptions = {};
+  protected fields: FormlyFieldConfig[] = [];
+  protected submitLabel: string = '';
+  protected loadError: string = '';
+  private readonly _destroy$ = new Subject<void>();
+  private _serviceOptions: FormOption[] = [];
+
+  constructor(private readonly _formConfigService: FormConfigService) {}
+
+  ngOnInit(): void {
+    this._formConfigService
+      .getServiceContractConfig()
+      .pipe(takeUntil(this._destroy$))
+      .subscribe({
+        next: (config) => {
+          this.loadError = '';
+          this.submitLabel = config.submitLabel;
+          this.fields = config.fields;
+          this._serviceOptions = this._extractServiceOptions(config.fields);
+        },
+        error: () => {
+          this.fields = [];
+          this.loadError = 'Unable to load form configuration.';
+        },
+      });
+  }
+
+  ngOnDestroy(): void {
+    this._destroy$.next();
+    this._destroy$.complete();
+  }
+
+  protected _submitForm(): void {
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
     }
-  ]
+
+    console.log('Form data:', this._buildSubmitPayload());
+  }
+
+  protected _clearForm(): void {
+    if (this.options.resetModel) {
+      this.options.resetModel();
+      return;
+    }
+
+    this.model = {};
+    this.form.reset();
+  }
+
+  protected _toggleService(): void {
+    if (!this._serviceOptions.length) {
+      return;
+    }
+
+    const currentIndex = this._serviceOptions.findIndex((option) => option.value === this.model.service);
+    const nextIndex = currentIndex < 0 ? 0 : (currentIndex + 1) % this._serviceOptions.length;
+    const nextService = this._serviceOptions[nextIndex].value as ServiceType;
+
+    this.form.get('service')?.setValue(nextService);
+    this.form.get('service')?.markAsTouched();
+  }
+
+  protected get _hasSelectedService(): boolean {
+    return !!this.model.service;
+  }
+
+  protected get _selectedServiceLabel(): string {
+    const selectedOption = this._serviceOptions.find((option) => option.value === this.model.service);
+    return selectedOption?.label || '';
+  }
+
+  protected get _toggleServiceLabel(): string {
+    if (!this._hasSelectedService) {
+      return 'Switch service';
+    }
+
+    const currentIndex = this._serviceOptions.findIndex((option) => option.value === this.model.service);
+    const nextIndex = currentIndex < 0 ? 0 : (currentIndex + 1) % this._serviceOptions.length;
+    const nextLabel = this._serviceOptions[nextIndex]?.label || 'service';
+    return `Switch to ${nextLabel}`;
+  }
+
+  private _extractServiceOptions(fields: FormlyFieldConfig[]): FormOption[] {
+    const serviceField = fields.find((field) => field.key === 'service');
+    return (serviceField?.props?.['options'] as FormOption[]) || [];
+  }
+
+  private _buildSubmitPayload(): ServiceFormPayload {
+    const name = this.model.name || '';
+    const email = this.model.email || '';
+    const service = this.model.service;
+
+    if (service === 'gas') {
+      return {
+        name,
+        email,
+        service,
+        rateGas: this.model.rateGas as GasRateType,
+        consumption: Number(this.model.consumption),
+      };
+    }
+
+    if (service === 'electricity') {
+      return {
+        name,
+        email,
+        service,
+        rateElectricity: this.model.rateElectricity as ElectricityRateType,
+        power: Number(this.model.power),
+      };
+    }
+
+    throw new Error('Service type is required to build payload.');
+  }
 }
+
