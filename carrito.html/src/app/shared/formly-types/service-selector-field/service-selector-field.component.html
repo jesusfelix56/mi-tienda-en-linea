@@ -1,0 +1,21 @@
+<div class="service">
+  <label class="title">{{ props.label }}</label>
+
+  <div class="options">
+    <button
+      *ngFor="let option of serviceOptions"
+      [id]="buildOptionId(option.value)"
+      class="option"
+      type="button"
+      [class.active]="isSelected(option.value)"
+      (click)="selectService(option.value)"
+    >
+      <span class="name">{{ option.label }}</span>
+      <span class="hint" *ngIf="option.hint">{{ option.hint }}</span>
+    </button>
+  </div>
+
+  <small class="error" *ngIf="showError">{{
+    props['requiredMessage'] || 'You must select a service type.'
+  }}</small>
+</div>

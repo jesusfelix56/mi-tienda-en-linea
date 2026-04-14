@@ -1,0 +1,88 @@
+$bg-page: #f3f4f6;
+$bg-card: #ffffff;
+$border-card: #d8dce1;
+$border-soft: #e5e7eb;
+$text-main: #111827;
+$error: #b42318;
+$teal-bg: #e9f7f4;
+$teal-border: #a8ddd1;
+$teal-text: #0f766e;
+
+.page {
+  min-height: 100vh;
+  background: $bg-page;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem 1rem;
+}
+
+.card {
+  width: min(100%, 35rem);
+  background: $bg-card;
+  border: 1px solid $border-card;
+  border-radius: 0.6rem;
+  padding: 2rem;
+  box-shadow: 0 12px 30px rgba(17, 24, 39, 0.08);
+}
+
+.loadError {
+  margin-bottom: 0.75rem;
+  color: $error;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.info {
+  margin-top: 1rem;
+  border: 1px solid $teal-border;
+  background: $teal-bg;
+  color: $teal-text;
+  border-radius: 0.45rem;
+  padding: 0.9rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.actions {
+  margin-top: 1.4rem;
+  border-top: 1px solid $border-soft;
+  padding-top: 1rem;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.6rem;
+}
+
+.submit,
+.clear {
+  border: 1px solid #bcc3cb;
+  border-radius: 0.45rem;
+  padding: 0.5rem 1.1rem;
+  background: #ffffff;
+  color: $text-main;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+
+  &:hover {
+    background: #f3f4f6;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+:host ::ng-deep .p-inputtext,
+:host ::ng-deep .p-dropdown {
+  width: 100%;
+  margin-bottom: 0.75rem;
+}
+
+@media (max-width: 720px) {
+  .info {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

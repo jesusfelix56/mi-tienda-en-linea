@@ -1,0 +1,38 @@
+<main id="serviceContractView" class="page">
+  <section class="card">
+    <form [formGroup]="form" (ngSubmit)="submitForm()" novalidate>
+      <p class="loadError" *ngIf="loadError">{{ loadError }}</p>
+
+      <formly-form
+        [form]="form"
+        [fields]="fields"
+        [model]="model"
+        [options]="options">
+      </formly-form>
+
+      <div class="info" *ngIf="hasSelectedService">
+        <span class="infoText">
+          You are contracting {{ selectedServiceLabel }}.
+        </span>
+      </div>
+
+      <div class="actions">
+        <button
+          id="clearButton"
+          class="clear"
+          type="button"
+          (click)="clearForm()">
+          Clear
+        </button>
+
+        <button
+          id="submitButton"
+          class="submit"
+          type="submit"
+          [disabled]="form.invalid || !hasSelectedService">
+          {{ submitLabel }}
+        </button>
+      </div>
+    </form>
+  </section>
+</main>

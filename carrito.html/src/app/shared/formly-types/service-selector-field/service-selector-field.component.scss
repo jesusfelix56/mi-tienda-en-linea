@@ -1,0 +1,69 @@
+$text-title: #1f2937;
+$text-main: #111827;
+$text-secondary: #6b7280;
+$border-default: #d1d5db;
+$border-active: #2563eb;
+$bg-default: #ffffff;
+$bg-active: #eff6ff;
+$text-active: #1d4ed8;
+$error: #dc2626;
+
+.service {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  margin-bottom: 1.4rem;
+}
+
+.title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: $text-title;
+}
+
+
+.options {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+
+.option {
+  border: 1px solid $border-default;
+  border-radius: 0.75rem;
+  padding: 1rem;
+  background: $bg-default;
+  color: $text-main;
+  cursor: pointer;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: $border-active;
+  }
+
+  &.active {
+    background: $bg-active;
+    border-color: $border-active;
+    color: $text-active;
+  }
+}
+
+.name {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.hint {
+  font-size: 0.85rem;
+  line-height: 1.3;
+  color: $text-secondary;
+}
+
+.error {
+  color: $error;
+}
